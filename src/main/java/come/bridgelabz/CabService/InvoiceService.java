@@ -1,5 +1,7 @@
 package come.bridgelabz.CabService;
 
+import java.util.List;
+
 public class InvoiceService {
 
 	private static final int MIN_COST_MIN = 1;
@@ -42,6 +44,13 @@ public class InvoiceService {
 		}
 		EnhancedInvoice summary = new EnhancedInvoice(rides.length,totalFare, totalFare/rides.length);
 		return summary;
+	}
+	
+	public EnhancedInvoice getRideFromUserId(String userId) {
+		List<Ride> rides = RideRepository.getRides(userId);
+		if(rides==null)
+			return null;
+		return getEnhancedInvoice(rides.toArray(new Ride[rides.size()]));
 	}
 
 }
