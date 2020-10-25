@@ -30,7 +30,18 @@ public class InvoiceService {
 		for (Ride ride : rides) {
 			totalFare = totalFare + getFare(ride.getDist(), ride.getTime());
 		}
+		
 		return totalFare;
+	}
+	
+	public EnhancedInvoice getEnhancedInvoice(Ride[] rides) {
+		if(rides.length==0) return null;
+		double totalFare = 0;
+		for (Ride ride : rides) {
+			totalFare = totalFare + getFare(ride.getDist(), ride.getTime());
+		}
+		EnhancedInvoice summary = new EnhancedInvoice(rides.length,totalFare, totalFare/rides.length);
+		return summary;
 	}
 
 }
