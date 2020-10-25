@@ -1,13 +1,14 @@
 package come.bridgelabz.CabService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class InvoiceServiceTest {
+import come.bridgelabz.CabService.Ride.rideType;
 
+public class InvoiceServiceTest {
 
 	@Test
 	public void givenDistAndTime_ShouldReturnFare() {
@@ -30,7 +31,7 @@ public class InvoiceServiceTest {
 	@Test
 	public void givenMultipleRides_ShouldReturnTotalFare() {
 		InvoiceService invoiceservice = new InvoiceService();
-		Ride[] rides = { new Ride(2.0, 5), new Ride(0.1, 1) };
+		Ride[] rides = { new Ride(2.0, 5, rideType.REGULAR), new Ride(0.1, 1, rideType.REGULAR) };
 		double fare = invoiceservice.getFare(rides);
 		Assert.assertEquals(30, fare, 0.0);
 
@@ -39,7 +40,7 @@ public class InvoiceServiceTest {
 	@Test
 	public void givenMultipleRides_ShouldReturnEnhancedInvoice() {
 		InvoiceService invoiceservice = new InvoiceService();
-		Ride[] rides = { new Ride(2.0, 5), new Ride(0.1, 1) };
+		Ride[] rides = { new Ride(2.0, 5, rideType.REGULAR), new Ride(0.1, 1, rideType.REGULAR) };
 		EnhancedInvoice summary = invoiceservice.getEnhancedInvoice(rides);
 		Assert.assertEquals(30, summary.totalFare, 0.0);
 		Assert.assertEquals(2, summary.totalNoOfRides);
@@ -49,11 +50,22 @@ public class InvoiceServiceTest {
 	@Test
 	public void givenUserId_ShouldReturnEnhancedInvoice() {
 		InvoiceService invoiceservice = new InvoiceService();
-		Ride[] rides ={ new Ride(2.0, 5), new Ride(0.1, 1) };
-		RideRepository.add("praneetha", Arrays.asList(rides));
+		Ride[] rides ={ new Ride(2.0, 5,rideType.REGULAR), new Ride(0.1, 1,rideType.REGULAR) };
+		RideRepository.add("praneetha", new ArrayList<Ride>(Arrays.asList(rides)));
 		EnhancedInvoice summary = invoiceservice.getRideFromUserId("praneetha");
 		Assert.assertEquals(30, summary.totalFare, 0.0);
 		Assert.assertEquals(2, summary.totalNoOfRides);
 		Assert.assertEquals(15, summary.avgFare, 0.0);
+	}
+	
+	@Test
+	public void givenUserIdandPremium_ShouldReturnEnhancedInvoice() {
+		InvoiceService invoiceservice = new InvoiceService();
+		Ride[] rides = { new Ride(2.0, 5, rideType.REGULAR), new Ride(0.1, 1, rideType.PREMIUM) };
+		RideRepository.add("pranee", new ArrayList<Ride>(Arrays.asList(rides)));
+		EnhancedInvoice summary = invoiceservice.getRideFromUserId("pranee");
+		Assert.assertEquals(45, summary.totalFare, 0.0);
+		Assert.assertEquals(2, summary.totalNoOfRides);
+		Assert.assertEquals(22.5, summary.avgFare, 0.0);
 	}
 }

@@ -2,11 +2,16 @@ package come.bridgelabz.CabService;
 
 import java.util.List;
 
+import come.bridgelabz.CabService.Ride.rideType;
+
 public class InvoiceService {
 
 	private static final int MIN_COST_MIN = 1;
 	private static final double MIN_COST_PER_KM = 10;
+	private static final int PREMIUM_MIN_COST_MIN = 2;
+	private static final double PREMIUM_MIN_COST_PER_KM = 15;
 	private static final double MINIMUM_FARE = 5;
+	private static final double PREMIUM_MINIMUM_FARE = 20;
 
 	/**
 	 * 
@@ -22,6 +27,14 @@ public class InvoiceService {
 		return fare;
 	}
 
+	public double getPremiumFare(double dist, int time) {
+		double fare = (dist * PREMIUM_MIN_COST_PER_KM) + (time * PREMIUM_MIN_COST_MIN);
+		if (fare < PREMIUM_MINIMUM_FARE) {
+			fare = PREMIUM_MINIMUM_FARE;
+		}
+		return fare;
+	}
+
 	/**
 	 * 
 	 * @param rides
@@ -32,23 +45,37 @@ public class InvoiceService {
 		for (Ride ride : rides) {
 			totalFare = totalFare + getFare(ride.getDist(), ride.getTime());
 		}
-		
+
 		return totalFare;
 	}
-	
+
+	/**
+	 * 
+	 * @param rides
+	 * @return enhanced invoice
+	 */
+
 	public EnhancedInvoice getEnhancedInvoice(Ride[] rides) {
-		if(rides.length==0) return null;
+		if (rides.length == 0)
+			return null;
 		double totalFare = 0;
 		for (Ride ride : rides) {
-			totalFare = totalFare + getFare(ride.getDist(), ride.getTime());
+			totalFare += ride.getType() == rideType.REGULAR ? getFare(ride.getDist(), ride.getTime())
+					: getPremiumFare(ride.getDist(), ride.getTime());
 		}
-		EnhancedInvoice summary = new EnhancedInvoice(rides.length,totalFare, totalFare/rides.length);
+		EnhancedInvoice summary = new EnhancedInvoice(rides.length, totalFare, totalFare / rides.length);
 		return summary;
 	}
-	
+
+	/**
+	 * 
+	 * @param userId
+	 * @return enhanced invoice by using userid
+	 */
+
 	public EnhancedInvoice getRideFromUserId(String userId) {
 		List<Ride> rides = RideRepository.getRides(userId);
-		if(rides==null)
+		if (rides == null)
 			return null;
 		return getEnhancedInvoice(rides.toArray(new Ride[rides.size()]));
 	}
